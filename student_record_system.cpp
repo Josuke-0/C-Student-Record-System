@@ -1,64 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main() {
-	//structure to group student related information
-	struct student {
-	char name[100];
-	int roll;
-	float marks;
-	};
-	
-	//Open the student.txt file
-	FILE *fptr;
-	fptr = fopen("student.txt", "a");
-	
-	//Generate an error message if file is not created
-	if(fptr == NULL) {
-		printf("Error in opening the File! \n");
-		exit(1);
-	}
-	
-	//Taking input from the user
-	struct student s;
-	printf("Enter your Name :");
-	scanf("%s", s.name);
-	printf("Enter your roll number :");
-	scanf("%d", &s.roll);
-	printf("Enter your marks :");
-	scanf("%f", &s.marks);
-	
-	//Printing the information in the student file
-	fprintf(fptr, "Name: %s \n", s.name);
-	fprintf(fptr, "Roll Number: %d \n", s.roll);
-	fprintf(fptr, "Marks obtained : %.2f \n", s.marks);
-	fprintf(fptr, "----------------------------------- \n");
-	
-	//Closing the file
-	fclose(fptr);
-	
-	//Opening the file again
-	fptr = fopen("student.txt", "r");
-	
-	//Generate an error message if file cannot be opened for reading
-	if(fptr == NULL) {
-	    printf("Error in opening the File! \n");
-	    exit(1);
-	}
-	
-	//Declaring line as a string
-	char line[200];
-	
-	//Print a header before storing data
-	printf("\n--- Stored Student Records ---\n");
+struct student {
+    char name[100];
+    int roll;
+    float marks;
+};
 
-	//Starting a while-loop to print line
-	while(fgets(line, sizeof(line), fptr)) {
-		printf("%s", line);
-	}
-	
-	//Closing the file
-	fclose(fptr);
-	
-	return 0;
-} 
+void addStudent();
+void viewStudent();
+
+int main() {
+    int choice;
+    
+    do {
+        printf("\n<------ Student Record System ------>\n");
+        printf("1) Add Student Record\n");
+        printf("2) View Student Records\n");
+        printf("3) Exit\n");
+        printf("-----------------------------------\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addStudent();
+                break;
+            case 2:
+                viewStudent();
+                break;
+            case 3:
+                printf("Program Exited Successfully!\n");
+                break;
+            default:
+                printf("Invalid Choice, Try again!\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
+
+void addStudent() {
+    FILE *fptr;
+    struct student s;
+
+    fptr = fopen("student.txt", "a");
+    if (fptr == NULL) {
+        printf("Error in opening the File!\n");
+        exit(1);
+    }
+
+    printf("Enter your Name: ");
+    scanf("%s", s.name);
+    printf("Enter your Roll Number: ");
+    scanf("%d", &s.roll);
+    printf("Enter your Marks: ");
+    scanf("%f", &s.marks);
+
+    fprintf(fptr, "%d %s %.2f\n", s.roll, s.name, s.marks);
+    fclose(fptr);
+
+    printf("Record added successfully!\n");
+    printf("-----------------------------------\n");
+}
+
+void viewStudent() {
+    FILE *fptr;
+    struct student s;
+
+    fptr = fopen("student.txt", "r");
+    if (fptr == NULL) {
+        printf("No records found!\n");
+        return;
+    }
+
+    printf("\n<----- Student Records ----->\n");
+    while (fscanf(fptr, "%d %s %f", &s.roll, s.name, &s.marks) != EOF) {
+        printf("Roll: %d | Name: %s | Marks: %.2f\n", s.roll, s.name, s.marks);
+        printf("-----------------------------------\n");
+    }
+
+    fclose(fptr);
+}
